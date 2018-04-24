@@ -13,3 +13,5 @@ ln -s ${NODE_HOME}/lib/node_modules /lib/node_modules
 ln -s /lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm
 ln -s /lib/node_modules/npm/bin/npx-cli.js /usr/local/bin/npx
 
+mkdir -p ${NODE_HOME}/npm
+ln -s ${HOME}/.npm ${NODE_HOME}/npm
