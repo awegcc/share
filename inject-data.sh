@@ -26,7 +26,7 @@ function download()
 for((i=0;i<99999999;))
 do
     filename=$i
-    echo $i >> src/$filename
+    echo "test file content is none, and number is: $i" >> src/$filename
     upload $filename
     download $filename
     if diff src/$filename dst/$filename > /dev/null
@@ -38,5 +38,5 @@ do
         exit
     fi
     i=$((i+1))
-    mv src/$filename src/$i
+    mv -n src/$filename src/$i
 done
