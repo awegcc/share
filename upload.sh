@@ -13,7 +13,7 @@ function print_usage()
 
 host=127.1.1.1
 port=3000
-key=$RANDOM
+key=$RANDOM$RANDOM
 filename=tmp.dat
 
 while getopts ':h:p:k:f:v' opt
