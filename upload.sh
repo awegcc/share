@@ -8,6 +8,7 @@ function print_usage()
     echo -e " -p port  port(default 3000)"
     echo -e " -k key   Object key(default random num)"
     echo -e " -f file  filename"
+    echo -e " -o options  curl options"
     exit 1
 }
 
@@ -16,7 +17,7 @@ port=3000
 key=$RANDOM$RANDOM
 filename=tmp.dat
 
-while getopts ':h:p:k:f:v' opt
+while getopts ':h:p:k:f:o:' opt
 do
     case $opt in
     h) host=$OPTARG
@@ -27,8 +28,8 @@ do
     ;;
     f) filename=$OPTARG
     ;;
-    v)
-       print_usage
+    o)
+       options="-$OPTARG"
     ;;
     ?) echo '  error'
        print_usage
@@ -37,8 +38,8 @@ do
 done
 
 mkdir -p tmp
-curl -XPOST "http://${host}:${port}/token?entryKey=$key&entryOp=put" -o tmp/token
+curl $options -XPOST "http://${host}:${port}/token?entryKey=$key&entryOp=put" -o tmp/token
 eval $(awk -F\" '{printf("token=%s\n",$4)}' tmp/token)
-curl -XPOST "http://${host}:${port}/pblocks/$key?token=$token" -H "Content-Type: application/octet-stream" --data-binary @$filename
+curl $options -XPOST "http://${host}:${port}/pblocks/$key?token=$token" -H "Content-Type: application/octet-stream" --data-binary @$filename
 echo "key: $key token: $token file:$filename"
 
