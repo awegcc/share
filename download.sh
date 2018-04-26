@@ -44,6 +44,6 @@ fi
 mkdir -p tmp
 curl -s -XPOST "http://${host}:${port}/token?entryKey=$key&entryOp=get" -o tmp/token
 eval $(awk -F\" '{printf("token=%s\n",$4)}' tmp/token)
-curl -XGET "http://${host}:${port}/pblocks/$key?token=$token" -o $filename
-echo "key: $key token: $token file:$filename"
+curl -XGET "http://${host}:${port}/pblocks/$key?token=$token" -o tmp/$filename
+echo "key: $key token: $token file:tmp/$filename"
 
