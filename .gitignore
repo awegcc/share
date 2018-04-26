@@ -60,3 +60,7 @@ typings/
 src/
 dst/
 tmp/
+
+dist/
+.bin/
+.cache/
