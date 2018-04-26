@@ -39,7 +39,6 @@ done
 mkdir -p tmp
 curl -XPOST "http://${host}:${port}/token?entryKey=$key&entryOp=put" -o tmp/token
 eval $(awk -F\" '{printf("token=%s\n",$4)}' tmp/token)
-echo "key: $key token: $token"
 curl -XPOST "http://${host}:${port}/pblocks/$key?token=$token" -H "Content-Type: application/octet-stream" --data-binary @$filename
 echo "key: $key token: $token file:$filename"
 
