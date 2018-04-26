@@ -64,10 +64,10 @@ do
     download $filename
     if diff src/$filename dst/$filename > /dev/null
     then
-        echo "${pkey}_$i ok"
+        echo " ${pkey}_$i ok"
         rm -f dst/$filename
     else
-	echo "${pkey}_$i failed"
+	echo " ${pkey}_$i failed"
         exit
     fi
     i=$((i+1))
