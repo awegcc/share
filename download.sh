@@ -8,6 +8,7 @@ function print_usage()
     echo -e " -p port  port(default 3000)"
     echo -e " -k key   Object key(default random num)"
     echo -e " -f file  filename(default key)"
+    echo -e " -n times  download times(download and compare)"
     exit 1
 }
 
@@ -15,8 +16,9 @@ host=127.1.1.1
 port=3000
 key=$RANDOM
 filename=''
+count=1
 
-while getopts ':h:p:k:f:v' opt
+while getopts ':h:p:k:n:v' opt
 do
     case $opt in
     h) host=$OPTARG
@@ -25,7 +27,7 @@ do
     ;;
     k) key=$OPTARG
     ;;
-    f) filename=$OPTARG
+    n) count=$OPTARG
     ;;
     v)
        print_usage
@@ -36,14 +38,30 @@ do
     esac
 done
 
-if [ "X$filename" == "X" ]
-then
-    filename=$key
-fi
-
 mkdir -p tmp
-curl -s -XPOST "http://${host}:${port}/token?entryKey=$key&entryOp=get" -o tmp/token
-eval $(awk -F\" '{printf("token=%s\n",$4)}' tmp/token)
-curl -XGET "http://${host}:${port}/pblocks/$key?token=$token" -o tmp/$filename
-echo "key: $key token: $token file:tmp/$filename"
+host_port=${host}:${port}
+
+function download()
+{
+    key="$1"
+    filename="$2"
+    eval $(curl -s -XPOST "http://${host_port}/token?entryKey=$key&entryOp=get" | awk -F\" '{printf("token=%s\n",$4)}')
+    curl -s -XGET "http://${host_port}/pblocks/$key?token=$token" -o tmp/$filename
+}
+
+download $key $key
+echo "key: $key file: tmp/$key"
+
+for((i=1; i<count; i++))
+do
+    download $key ${key}.$i
+    if diff tmp/$key tmp/${key}.$i > /dev/null
+    then
+        echo "file tmp/${key}.$i ok"
+        rm -f tmp/${key}.$i
+    else
+        echo "file tmp/${key}.$i failed"
+        break
+    fi
+done
 
