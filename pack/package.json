@@ -9,10 +9,12 @@
   "author": "cc",
   "license": "ISC",
   "dependencies": {
-    "webpack": "^4.6.0",
-    "webpack-cli": "^2.0.15"
+    "leveldown": "^3.0.1",
+    "levelup": "^2.0.2"
   },
   "devDependencies": {
-    "mocha": "^5.1.1"
+    "mocha": "^5.1.1",
+    "webpack": "^4.6.0",
+    "webpack-cli": "^2.0.15"
   }
 }

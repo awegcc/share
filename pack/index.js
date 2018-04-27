@@ -1,6 +1,7 @@
 
-const fs = require('fs')
-const {Writable} = require('stream')
+const levelup = require('levelup');
+const fs = require('fs');
+const {Writable} = require('stream');
 
 class WritableCacheStream extends Writable {
   constructor(options) {
