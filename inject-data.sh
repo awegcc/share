@@ -42,8 +42,7 @@ function upload()
 {
     key="$1"
     filename="$1"
-    curl -s -XPOST "http://${host_port}/token?entryKey=$key&entryOp=put" -o tmp/token
-    eval $(awk -F\" '{printf("token=%s\n",$4)}' tmp/token)
+    eval $(curl -s -XPOST "http://${host_port}/token?entryKey=$key&entryOp=put" | awk -F\" '{printf("token=%s\n",$4)}')
     curl -s -XPOST "http://${host_port}/pblocks/$key?token=$token" -H "Content-Type: application/octet-stream" --data-binary @src/$filename
 }
 
@@ -51,8 +50,7 @@ function download()
 {
     key="$1"
     filename="$1"
-    curl -s -XPOST "http://${host_port}/token?entryKey=$key&entryOp=get" -o tmp/token2
-    eval $(awk -F\" '{printf("token=%s\n",$4)}' tmp/token2)
+    eval $(curl -s -XPOST "http://${host_port}/token?entryKey=$key&entryOp=get" | awk -F\" '{printf("token=%s\n",$4)}')
     curl -s -XGET "http://${host_port}/pblocks/$key?token=$token" -o dst/$filename
 }
 
