@@ -1,0 +1,7 @@
+#!/bin/sh
+
+# VBoxManage list runningvms
+# VBoxManage startvm centos-7 --type headless
+# VBoxManage controlvm centos-7 acpipowerbutton
+
+ssh root@cs7
