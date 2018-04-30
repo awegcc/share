@@ -4,4 +4,15 @@
 # VBoxManage startvm centos-7 --type headless
 # VBoxManage controlvm centos-7 acpipowerbutton
 
-ssh root@cs7
+if [ "X$1" == "Xstart" ]
+then
+    VBoxManage startvm centos-7 --type headless
+elif [ "X$1" == "Xlist" ]
+then
+    VBoxManage list runningvms
+elif [ "X$1" == "Xstop" ]
+then
+    VBoxManage controlvm centos-7 acpipowerbutton
+else
+    ssh root@cs7
+fi
