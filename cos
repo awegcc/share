@@ -10,9 +10,12 @@ then
 elif [ "X$1" == "Xlist" ]
 then
     VBoxManage list runningvms
-elif [ "X$1" == "Xstop" ]
+elif [ "X$1" == "Xshutdown" ]
 then
     VBoxManage controlvm centos-7 acpipowerbutton
+elif [ "X$1" == "Xstop" ]
+then
+    sshpass -pdawter ssh root@cs7 poweroff
 else
-    ssh root@cs7
+    sshpass -pdawter ssh root@cs7
 fi
