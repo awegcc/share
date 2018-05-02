@@ -6,7 +6,7 @@ function print_usage()
     echo -e "\033[0;31m Usage: \033[0m $base_name [options...]"
     echo -e " -h host  Host address(default 127.0.0.1)"
     echo -e " -p port  port(default 3000)"
-    echo -e " -k key   key prefix"
+    echo -e " -k key   key prefix(default k)"
     echo -e " -o options  curl options"
     exit 1
 }
@@ -36,7 +36,7 @@ done
 host_port=$host:$port
 pkey="$prefix-$RANDOM"
 
-mkdir -p src dst tmp
+mkdir -p src dst
 
 function upload()
 {
