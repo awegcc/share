@@ -12,10 +12,11 @@ function print_usage()
     exit 1
 }
 
-host=127.1.1.1
+host=127.0.0.1
 port=3000
 key=$RANDOM$RANDOM
 filename=tmp.dat
+options='-s'
 
 while getopts ':h:p:k:f:o:' opt
 do
@@ -28,8 +29,7 @@ do
     ;;
     f) filename=$OPTARG
     ;;
-    o)
-       options="-$OPTARG"
+    o) options="-$OPTARG"
     ;;
     ?) echo '  error'
        print_usage
@@ -38,6 +38,6 @@ do
 done
 
 eval $(curl -s -XPOST "http://${host}:${port}/token?entryKey=$key&entryOp=put" | awk -F\" '{printf("token=%s\n",$4)}')
-curl $options -XPOST "http://${host}:${port}/pblocks/$key?token=$token" -H "Content-Type: application/octet-stream" --data-binary @$filename
+curl ${options} -XPOST "http://${host}:${port}/pblocks/$key?token=$token" -H "Content-Type: application/octet-stream" --data-binary @$filename
 echo "key: $key token: $token file:$filename"
 

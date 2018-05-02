@@ -8,15 +8,17 @@ function print_usage()
     echo -e " -p port  port(default 3000)"
     echo -e " -k key   Object key(default random num)"
     echo -e " -n times  download times(download and compare)"
+    echo -e " -o options  curl options"
     exit 1
 }
 
-host=127.1.1.1
+host=127.0.0.1
 port=3000
 key=$RANDOM
+options='-s'
 count=1
 
-while getopts ':h:p:k:n:v' opt
+while getopts ':h:p:k:n:o:v' opt
 do
     case $opt in
     h) host=$OPTARG
@@ -27,8 +29,9 @@ do
     ;;
     n) count=$OPTARG
     ;;
-    v)
-       print_usage
+    o) options="-$OPTARG"
+    ;;
+    v) print_usage
     ;;
     ?) echo '  error'
        print_usage
@@ -44,7 +47,7 @@ function download()
     key="$1"
     filename="$2"
     eval $(curl -s -XPOST "http://${host_port}/token?entryKey=$key&entryOp=get" | awk -F\" '{printf("token=%s\n",$4)}')
-    curl -s -XGET "http://${host_port}/pblocks/$key?token=$token" -o dst/$filename
+    curl ${options} -XGET "http://${host_port}/pblocks/$key?token=$token" -o dst/$filename
 }
 
 download $key $key

@@ -11,9 +11,10 @@ function print_usage()
     exit 1
 }
 
-host=127.1.1.1
+host=127.0.0.1
 port=3000
 prefix='k'
+options='-s'
 
 while getopts ':h:p:k:f:o:' opt
 do
@@ -24,8 +25,7 @@ do
     ;;
     k) prefix="${OPTARG}"
     ;;
-    o)
-       options="-$OPTARG"
+    o) options="-$OPTARG"
     ;;
     ?) echo '  error'
        print_usage
@@ -43,7 +43,7 @@ function upload()
     key="$1"
     filename="$1"
     eval $(curl -s -XPOST "http://${host_port}/token?entryKey=$key&entryOp=put" | awk -F\" '{printf("token=%s\n",$4)}')
-    curl -s -XPOST "http://${host_port}/pblocks/$key?token=$token" -H "Content-Type: application/octet-stream" --data-binary @src/$filename
+    curl ${options} -XPOST "http://${host_port}/pblocks/$key?token=$token" -H "Content-Type: application/octet-stream" --data-binary @src/$filename
 }
 
 function download()
