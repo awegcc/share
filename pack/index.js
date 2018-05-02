@@ -1,50 +1,40 @@
 
 const levelup = require('levelup');
+const leveldown = require('leveldown');
 const fs = require('fs');
-const {Writable} = require('stream');
 
-class WritableCacheStream extends Writable {
-  constructor(options) {
-    super();
-    this._cache = options.cache;
-    this._objectKey = options.objectKey;
-    this._internalBuf = Buffer([], 'binary');
-  }
-
-  _write(bytes, encoding, cb) {
-    // todo: return if exceed internalBuf max size
-    this._internalBuf = Buffer.concat([this._internalBuf, bytes]);
-    cb();
-  }
-
-  _final(cb) {
-    //this._cache._cache.set(this._objectKey, this._internalBuf);
-    console.log(this._internalBuf.toString());
-    cb();
-  }
-}
+const db = levelup(leveldown('/tmp/leveldb'));
 
 function writeObject(key, obj, cb) {
-    const writeStream =  new WritableCacheStream({
-      cache: this,
-      objectKey: key
-    });
 
-    writeStream.on('finish', () => {
-      cb();
-    });
-
-    writeStream.on('error', (err) => {
-      writeStream.removeAllListeners();
-      cb(err);
-    });
-    writeStream.write(obj);
-    writeStream.end();
+	db.put(key, obj, (err) => {
+		if(err) {
+			return cb(err);
+		}
+		return cb();
+	});
 }
+
+function readObject(key, cb) {
+	db.get(key, (err, value) => {
+		if(err) {
+			return cb(err, value);
+		}
+		return cb(null, value);
+	});
+}
+
 
 
 writeObject('key-001', 'content  999 999 999', (err, ss) => {
 	if(err) {
-		console.log(err);
+		console.log('writeObject', err);
 	}
-	});
+});
+
+readObject('key-001', (err, data) => {
+    if(err) {
+	console.log(err);
+    }
+    console.log(`readObject: ${data}`);
+});
