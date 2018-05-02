@@ -8,7 +8,10 @@ module.exports = {
     filename: 'bundle.js'
   },
   module: {
-    noParse: /levelup\.js$/
+    //noParse: /levelup\.js$/
   },
+  externals: [
+    'leveldown'
+  ],
   target: 'node'
 };
