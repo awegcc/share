@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 function print_usage()
 {
@@ -58,17 +58,17 @@ function download()
 }
 
 download $key $filename
-echo "key: $key file: dst/$key"
+echo "key: $key file: $filename"
 
 for((i=1; i<count; i++))
 do
-    download $key ${key}.$i
-    if diff dst/$key dst/${key}.$i > /dev/null
+    download $key ${filename}.$i
+    if diff $filename ${filename}.$i > /dev/null
     then
-        echo "file dst/${key}.$i ok"
-        rm -f dst/${key}.$i
+        echo "file ${filename}.$i ok"
+        rm -f ${filename}.$i
     else
-        echo "file dst/${key}.$i failed"
+        echo "file ${filename}.$i failed"
         break
     fi
 done
