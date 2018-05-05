@@ -50,3 +50,10 @@ async.series(
         }
     ]
 );
+
+console.log('----------------------------');
+
+async.forEach([func1, func2, func3], (a, b, c) => {
+  console.log(a, b, c);
+  a(req, res, callback);
+}); 

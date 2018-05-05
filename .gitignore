@@ -60,6 +60,7 @@ typings/
 src/
 dst/
 tmp/
+package-lock.json
 
 dist/
 .bin/
