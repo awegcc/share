@@ -30,11 +30,7 @@ var callback = function(){};
 func1(req,res,callback);
 func2(req,res,callback);
 func3(req,res,callback);
-*/
 
-var req = null;
-var res = null;
-var callback = function(){};
 async.series(
     [
         function(callback){
@@ -51,9 +47,10 @@ async.series(
     ]
 );
 
+*/
 console.log('----------------------------');
 
-async.forEach([func1, func2, func3], (a, b, c) => {
-  console.log(a, b, c);
-  a(req, res, callback);
+async.forEach([func1, func2, func3], (func, param, cb) => {
+  console.log(func, param, callback);
+  func(req, res, callback);
 }); 
