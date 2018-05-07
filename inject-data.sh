@@ -8,6 +8,7 @@ function print_usage()
     echo -e " -p port    port(default 3000)"
     echo -e " -k key     key prefix(default k)"
     echo -e " -n count   inject and download times(default 8192)"
+    echo -e " -i ignore  ignore failed download(default false)"
     echo -e " -o options curl options"
     exit 1
 }
@@ -18,7 +19,7 @@ prefix='k'
 count=8192
 options='-s'
 
-while getopts ':h:p:k:n:o:' opt
+while getopts ':h:p:k:n:o:i' opt
 do
     case $opt in
     h) host=$OPTARG
@@ -28,6 +29,8 @@ do
     k) prefix="${OPTARG}"
     ;;
     n) count="${OPTARG}"
+    ;;
+    i) ignore=TRUE
     ;;
     o) options="-$OPTARG"
     ;;
@@ -70,8 +73,8 @@ do
         echo " download ${filename}.down ok"
         rm -f ${filename}.down
     else
-            echo " download ${filename}.down failed"
-        exit
+        echo " download ${filename}.down failed"
+        [ "X$ignore" == "X" ] && exit
     fi
     i=$((i+1))
     mv -n $filename tmp/${pkey}_$i
