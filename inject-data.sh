@@ -7,7 +7,7 @@ function print_usage()
     echo -e " -h host    Host address(default 127.0.0.1)"
     echo -e " -p port    port(default 3000)"
     echo -e " -k key     key prefix(default k)"
-    echo -e " -n times   inject and download times(default 8192)"
+    echo -e " -n count   inject and download times(default 8192)"
     echo -e " -o options curl options"
     exit 1
 }
@@ -40,38 +40,40 @@ done
 host_port=$host:$port
 pkey="$prefix-$RANDOM"
 
-mkdir -p src dst
+mkdir -p tmp
 
 function upload()
 {
     key="$1"
-    filename="$1"
+    up_fname="$2"
     eval $(curl -s -XPOST "http://${host_port}/token?entryKey=$key&entryOp=put" | awk -F\" '{printf("token=%s\n",$4)}')
-    curl ${options} -XPOST "http://${host_port}/pblocks/$key?token=$token" -H "Content-Type: application/octet-stream" --data-binary @src/$filename
+    curl ${options} -XPOST "http://${host_port}/pblocks/$key?token=$token" -H "Content-Type: application/octet-stream" --data-binary @$up_fname
 }
 
 function download()
 {
     key="$1"
-    filename="$1"
+    down_fname="$2"
     eval $(curl -s -XPOST "http://${host_port}/token?entryKey=$key&entryOp=get" | awk -F\" '{printf("token=%s\n",$4)}')
-    curl -s -XGET "http://${host_port}/pblocks/$key?token=$token" -o dst/$filename
+    curl -s -XGET "http://${host_port}/pblocks/$key?token=$token" -o $down_fname
 }
 
 for((i=0;i<count;))
 do
-    filename="${pkey}_$i"
-    echo "test file content($filename), and number is: $i" >> src/$filename
-    upload $filename
-    download $filename
-    if diff src/$filename dst/$filename > /dev/null
+    key="${pkey}_$i"
+    filename="tmp/${pkey}_$i"
+    echo "test file content($filename), and number is: $i" >> $filename
+    upload $key ${filename}
+    download $key ${filename}.down
+    if md5sum ${filename} ${filename}.down | awk '{array[$1]++}END{if(length(array)==1)exit 0;else exit 1}'
     then
-        echo " download ${filename} ok"
-        rm -f dst/$filename
+        echo " download ${filename}.down ok"
+        rm -f ${filename}.down
     else
-	echo " download ${filename} failed"
+            echo " download ${filename}.down failed"
         exit
     fi
     i=$((i+1))
-    mv -n src/$filename src/${pkey}_$i
+    mv -n $filename tmp/${pkey}_$i
 done
+
