@@ -68,7 +68,11 @@ do
     echo "test file content($filename), and number is: $i" >> $filename
     upload $key ${filename}
     download $key ${filename}.down
-    if md5sum ${filename} ${filename}.down | awk '{array[$1]++}END{if(length(array)==1)exit 0;else exit 1}'
+    if ! [ -f ${filename}.down ]
+    then
+        echo " download ${filename}.down failed"
+        [ "X$ignore" == "X" ] && exit
+    elif md5sum ${filename} ${filename}.down | awk '{array[$1]++}END{if(length(array)==1)exit 0;else exit 1}'
     then
         echo " download ${filename}.down ok"
         rm -f ${filename}.down
