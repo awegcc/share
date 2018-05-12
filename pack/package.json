@@ -10,7 +10,8 @@
   "license": "ISC",
   "dependencies": {
     "leveldown": "^3.0.1",
-    "levelup": "^2.0.2"
+    "levelup": "^2.0.2",
+    "secp256k1": "^3.5.0"
   },
   "devDependencies": {
     "mocha": "^5.1.1",
