@@ -72,7 +72,7 @@ do
     then
         echo " download ${filename}.down failed"
         [ "X$ignore" == "X" ] && exit
-    elif md5sum ${filename} ${filename}.down | awk '{array[$1]++}END{if(length(array)==1)exit 0;else exit 1}'
+    elif cksum ${filename} ${filename}.down | awk '{array[$1]++}END{if(length(array)==1)exit 0;else exit 1}'
     then
         echo " download ${filename}.down ok"
         rm -f ${filename}.down
