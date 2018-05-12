@@ -10,8 +10,9 @@ module.exports = {
   module: {
     //noParse: /levelup\.js$/
   },
-  externals: [
-    'leveldown'
-  ],
+  externals: {
+    'leveldown':"require('leveldown')",
+    'bindings':"require(''bindings'')"
+  },
   target: 'node'
 };
