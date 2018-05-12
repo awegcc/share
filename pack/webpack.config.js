@@ -12,6 +12,7 @@ module.exports = {
   },
   externals: {
     'leveldown':"require('leveldown')",
+    'secp256k1':"require('secp256k1')",
     'bindings':"require(''bindings'')"
   },
   target: 'node'
