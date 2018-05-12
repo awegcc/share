@@ -1,6 +1,8 @@
 const fs = require('fs');
 const levelup = require('levelup');
 const leveldown = require('leveldown');
+const secp256k1 = require('secp256k1');
+const { randomBytes } = require('crypto');
 
 const db = levelup(leveldown('/tmp/leveldb'));
 
@@ -25,10 +27,17 @@ function readObject(key, cb) {
 
 
 function main() {
-	let key = 'Key-0001'
+	let key;
 	if ( process.argv.length == 3 ) {
-		key = process.argv[2];
+		key = Buffer.from(process.argv[2]);
+	} else {
+		do {
+			key = randomBytes(32);
+		} while (!secp256k1.privateKeyVerify(key));
+
+		key = key.toString('hex');
 	}
+
 	writeObject(key, `value of ${key}`, (err, ss) => {
 		if(err) {
 			console.log('writeObject', err);
