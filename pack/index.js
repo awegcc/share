@@ -1,12 +1,11 @@
-
+#!/usr/bin/env node
+const fs = require('fs');
 const levelup = require('levelup');
 const leveldown = require('leveldown');
-const fs = require('fs');
 
 const db = levelup(leveldown('/tmp/leveldb'));
 
 function writeObject(key, obj, cb) {
-
 	db.put(key, obj, (err) => {
 		if(err) {
 			return cb(err);
@@ -14,6 +13,7 @@ function writeObject(key, obj, cb) {
 		return cb();
 	});
 }
+
 
 function readObject(key, cb) {
 	db.get(key, (err, value) => {
@@ -25,16 +25,27 @@ function readObject(key, cb) {
 }
 
 
-
-writeObject('key-001', 'content  999 999 999', (err, ss) => {
-	if(err) {
-		console.log('writeObject', err);
+function main() {
+	let key = 'Key-0001'
+	if ( process.argv.length == 3 ) {
+		key = process.argv[2];
 	}
-});
+	writeObject(key, `value of ${key}`, (err, ss) => {
+		if(err) {
+			console.log('writeObject', err);
+			return;
+		}
 
-readObject('key-001', (err, data) => {
-    if(err) {
-	console.log(err);
-    }
-    console.log(`readObject: ${data}`);
-});
+		readObject(key, (err, data) => {
+			if(err) {
+				console.log('readObject', err);
+				return;
+			}
+			console.log(`key: ${key} value: ${data}`);
+		});
+	});
+}
+
+main();
+
+
