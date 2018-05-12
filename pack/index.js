@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 const fs = require('fs');
 const levelup = require('levelup');
 const leveldown = require('leveldown');
