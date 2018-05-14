@@ -8,7 +8,7 @@ function print_usage()
     echo -e " -p port  port(default 3000)"
     echo -e " -k key   Object key(default random num)"
     echo -e " -n times  download times(download and compare)"
-    echo -e " -f filename (default dst/key)"
+    echo -e " -f filename (default tmp/key)"
     echo -e " -o options  curl options"
     exit 1
 }
@@ -42,11 +42,11 @@ do
     esac
 done
 
-mkdir -p dst
+mkdir -p tmp
 host_port=${host}:${port}
 if [ "X$filename" == "X" ]
 then
-    filename="dst/$key"
+    filename="tmp/$key"
 fi
 
 function download()
@@ -63,12 +63,16 @@ echo "key: $key file: $filename"
 for((i=1; i<count; i++))
 do
     download $key ${filename}.$i
-    if diff $filename ${filename}.$i > /dev/null
+    if ! [ -f ${filename}.$i ]
     then
-        echo "file ${filename}.$i ok"
+        echo " download ${filename}.$i failed"
+        break
+    elif cksum ${filename} ${filename}.$i | awk '{array[$1]++}END{if(length(array)==1)exit 0;else exit 1}'
+    then
+        echo " download ${filename}.$i ok"
         rm -f ${filename}.$i
     else
-        echo "file ${filename}.$i failed"
+        echo " download ${filename}.$i failed"
         break
     fi
 done
