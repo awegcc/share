@@ -49,16 +49,18 @@ function upload()
 {
     key="$1"
     up_fname="$2"
-    eval $(curl -s -XPOST "http://${host_port}/token?entryKey=$key&entryOp=put" | awk -F\" '{printf("token=%s\n",$4)}')
-    curl ${options} -XPOST "http://${host_port}/pblocks/$key?token=$token" -H "Content-Type: application/octet-stream" --data-binary @$up_fname
+    curl ${options} -XPOST -o .${pkey}.put "http://${host_port}/token?entryKey=$key&entryOp=put"
+    eval $(awk -F\" '{printf("ptoken=%s\n",$4)}' .${pkey}.put)
+    curl ${options} -XPOST "http://${host_port}/pblocks/$key?token=$ptoken" -H "Content-Type: application/octet-stream" --data-binary @$up_fname
 }
 
 function download()
 {
     key="$1"
     down_fname="$2"
-    eval $(curl -s -XPOST "http://${host_port}/token?entryKey=$key&entryOp=get" | awk -F\" '{printf("token=%s\n",$4)}')
-    curl -s -XGET "http://${host_port}/pblocks/$key?token=$token" -o $down_fname
+    curl ${options} -XPOST -o .${pkey}.get "http://${host_port}/token?entryKey=$key&entryOp=get"
+    eval $(awk -F\" '{printf("gtoken=%s\n",$4)}' .${pkey}.get)
+    curl ${options} -XGET "http://${host_port}/pblocks/$key?token=$gtoken" -o $down_fname
 }
 
 for((i=0;i<count;))
@@ -70,15 +72,25 @@ do
     download $key ${filename}.down
     if ! [ -f ${filename}.down ]
     then
-        echo " download ${filename}.down failed"
-        [ "X$ignore" == "X" ] && exit
+        if [ "X$ignore" == "X" ]
+        then
+            echo " download ${filename}.down file not find"
+            break
+        else
+            echo " download ${filename}.down file not find" >> tmp/${pkey}.log
+	fi
     elif cksum ${filename} ${filename}.down | awk '{array[$1]++}END{if(length(array)==1)exit 0;else exit 1}'
     then
         echo " download ${filename}.down ok"
         rm -f ${filename}.down
     else
-        echo " download ${filename}.down failed"
-        [ "X$ignore" == "X" ] && exit
+        if [ "X$ignore" == "X" ]
+        then
+            echo " download ${filename}.down failed"
+            break
+        else
+            echo " download ${filename}.down failed" >> tmp/${pkey}.log
+	fi
     fi
     i=$((i+1))
     mv -n $filename tmp/${pkey}_$i

@@ -53,7 +53,7 @@ function download()
 {
     key="$1"
     _filename="$2"
-    eval $(curl -s -XPOST "http://${host_port}/token?entryKey=$key&entryOp=get" | awk -F\" '{printf("token=%s\n",$4)}')
+    eval $(curl ${options} -XPOST "http://${host_port}/token?entryKey=$key&entryOp=get" | awk -F\" '{printf("token=%s\n",$4)}')
     curl ${options} -XGET "http://${host_port}/pblocks/$key?token=$token" -o $_filename
 }
 

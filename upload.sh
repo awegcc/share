@@ -37,7 +37,7 @@ do
     esac
 done
 
-eval $(curl -s -XPOST "http://${host}:${port}/token?entryKey=$key&entryOp=put" | awk -F\" '{printf("token=%s\n",$4)}')
+eval $(curl ${options} -XPOST "http://${host}:${port}/token?entryKey=$key&entryOp=put" | awk -F\" '{printf("token=%s\n",$4)}')
 curl ${options} -XPOST "http://${host}:${port}/pblocks/$key?token=$token" -H "Content-Type: application/octet-stream" --data-binary @$filename
 echo "key: $key token: $token file:$filename"
 
