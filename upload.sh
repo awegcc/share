@@ -15,7 +15,8 @@ print_usage()
 
 host=127.0.0.1
 port=3000
-key=$RANDOM$RANDOM
+eval $(awk 'BEGIN{srand(); printf("random=%05d",rand()*100000)}')
+key="key-$random"
 filename=tmp.dat
 options='-s'
 
