@@ -1,6 +1,7 @@
-#!/bin/bash
-
-function print_usage()
+#!/bin/sh
+#
+#
+print_usage()
 {
     local base_name=$(basename $0)
     echo -e "\033[0;31m Usage: \033[0m $base_name [options...]"
@@ -15,7 +16,6 @@ function print_usage()
 
 host=127.0.0.1
 port=3000
-key=$RANDOM
 options='-s'
 count=1
 
@@ -44,12 +44,17 @@ done
 
 mkdir -p tmp
 host_port=${host}:${port}
-if [ "X$filename" == "X" ]
+if [ "X$key" = "X" ]
+then
+    echo "Specify -k key to down"
+    exit 1
+fi
+if [ "X$filename" = "X" ]
 then
     filename="tmp/$key"
 fi
 
-function download()
+download()
 {
     key="$1"
     _filename="$2"
@@ -60,14 +65,15 @@ function download()
 download $key $filename
 echo "key: $key file: $filename"
 
-for((i=1; i<count; i++))
+i=1;
+while [ $i -lt $count ]
 do
     download $key ${filename}.$i
     if ! [ -f ${filename}.$i ]
     then
         echo " download ${filename}.$i failed"
         break
-    elif cksum ${filename} ${filename}.$i | awk '{array[$1]++}END{if(length(array)==1)exit 0;else exit 1}'
+    elif cksum ${filename} ${filename}.$i | awk '{array[$1]++}END{for(i in array)count++;if(count==1)exit 0; else exit 1}'
     then
         echo " download ${filename}.$i ok"
         rm -f ${filename}.$i
@@ -75,5 +81,6 @@ do
         echo " download ${filename}.$i failed"
         break
     fi
+    i=$((i+1))
 done
 

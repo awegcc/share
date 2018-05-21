@@ -1,6 +1,7 @@
-#!/bin/bash
-
-function print_usage()
+#!/bin/sh
+#
+#
+print_usage()
 {
     local base_name=$(basename $0)
     echo -e "\033[0;31m Usage: \033[0m $base_name [options...]"
