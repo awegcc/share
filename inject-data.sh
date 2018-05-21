@@ -1,8 +1,9 @@
-#!/bin/bash
-
-function print_usage()
+#!/bin/sh
+#
+#
+print_usage()
 {
-    local base_name=$(basename $0)
+    local base_name=`basename $0`
     echo -e "\033[0;31m  Usage: \033[0m $base_name [options...]"
     echo -e " -h host    Host address(default 127.0.0.1)"
     echo -e " -p port    port(default 3000)"
@@ -41,11 +42,11 @@ do
 done
 
 host_port=$host:$port
-pkey="$prefix-$RANDOM"
+pkey="$prefix-`date +%N`"
 
 mkdir -p tmp
 
-function upload()
+upload()
 {
     key="$1"
     up_fname="$2"
@@ -54,7 +55,7 @@ function upload()
     curl ${options} -XPOST "http://${host_port}/pblocks/$key?token=$ptoken" -H "Content-Type: application/octet-stream" --data-binary @$up_fname
 }
 
-function download()
+download()
 {
     key="$1"
     down_fname="$2"
@@ -63,11 +64,12 @@ function download()
     curl ${options} -XGET "http://${host_port}/pblocks/$key?token=$gtoken" -o $down_fname
 }
 
-for((i=0;i<count;))
+i=0
+while [ $i -lt $count ]
 do
     key="${pkey}_$i"
     filename="tmp/${pkey}_$i"
-    echo "test file content($filename), and number is: $i" >> $filename
+    echo "Just test file contents with( $filename )" >> $filename
     upload $key ${filename}
     download $key ${filename}.down
     if ! [ -f ${filename}.down ]
@@ -79,7 +81,7 @@ do
         else
             echo " download ${filename}.down file not find" >> tmp/${pkey}.log
 	fi
-    elif cksum ${filename} ${filename}.down | awk '{array[$1]++}END{if(length(array)==1)exit 0;else exit 1}'
+    elif cksum ${filename} ${filename}.down | awk '{array[$1]++}END{for(i in array)count++;if(count==1)exit 0; else exit 1}'
     then
         echo " download ${filename}.down ok"
         rm -f ${filename}.down
