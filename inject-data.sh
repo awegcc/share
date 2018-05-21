@@ -74,24 +74,24 @@ do
     download $key ${filename}.down
     if ! [ -f ${filename}.down ]
     then
-        if [ "X$ignore" == "X" ]
+        if [ "X$ignore" = "X" ]
         then
             echo " download ${filename}.down file not find"
             break
         else
-            echo " download ${filename}.down file not find" >> tmp/${pkey}.log
+            echo " download ${filename}.down file not find" | tee -a tmp/${pkey}.log
 	fi
     elif cksum ${filename} ${filename}.down | awk '{array[$1]++}END{for(i in array)count++;if(count==1)exit 0; else exit 1}'
     then
         echo " download ${filename}.down ok"
         rm -f ${filename}.down
     else
-        if [ "X$ignore" == "X" ]
+        if [ "X$ignore" = "X" ]
         then
             echo " download ${filename}.down failed"
             break
         else
-            echo " download ${filename}.down failed" >> tmp/${pkey}.log
+            echo " download ${filename}.down failed" | tee -a tmp/${pkey}.log
 	fi
     fi
     i=$((i+1))
