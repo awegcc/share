@@ -1,13 +1,14 @@
 {
-  "name": "myshare-fileserver-example",
+  "name": "myshare-fileserver",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
+  "bin": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
   },
-  "author": "",
+  "author": "ccshare",
   "license": "ISC",
   "dependencies": {
     "assert-types": "^0.2.1",
@@ -37,5 +38,13 @@
     "proxyquire": "^2.0.1",
     "rimraf": "^2.6.2",
     "sinon": "^5.0.10"
+  },
+  "pkg": {
+    "assets": [
+      "node_modules/**/*node"
+    ],
+    "targets": [
+      "node8"
+    ]
   }
 }
