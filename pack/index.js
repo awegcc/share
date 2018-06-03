@@ -1,10 +1,11 @@
-const fs = require('fs');
 const levelup = require('levelup');
 const leveldown = require('leveldown');
 const secp256k1 = require('secp256k1');
 const { randomBytes } = require('crypto');
+const path = require('path');
 
-const db = levelup(leveldown('/tmp/leveldb'));
+const dbpath = path.join('/tmp', 'levelup');
+const db = levelup(leveldown(dbpath));
 
 function writeObject(key, obj, cb) {
   db.put(key, obj, (err) => {
@@ -27,29 +28,40 @@ function readObject(key, cb) {
 
 
 function main() {
-  let key;
-  if (process.argv.length == 3) {
-    key = Buffer.from(process.argv[2]);
-  } else {
-    do {
-      key = randomBytes(32);
-    } while (!secp256k1.privateKeyVerify(key));
+const msg = randomBytes(32)
+   
+  // generate privKey
+  let privKey
+  do {
+    privKey = randomBytes(32)
+  } while (!secp256k1.privateKeyVerify(privKey))
+   
+  // get the public key in a compressed format
+  const pubKey = secp256k1.publicKeyCreate(privKey)
+   
+  // sign the message
+  const sigObj = secp256k1.sign(msg, privKey)
+   
+  // verify the signature
+  console.log("pubKey verify: ", secp256k1.verify(msg, sigObj.signature, pubKey))
 
-    key = key.toString('hex');
-  }
+  let hrtime = process.hrtime()
+  let key = hrtime[0]
+  let value = hrtime[1]
 
-  writeObject(key, `value of ${key}`, (err, ss) => {
+  writeObject(key, value, (err, ss) => {
     if (err) {
       console.log('writeObject', err);
       return;
     }
+    console.log("write:", key, value);
 
     readObject(key, (err, data) => {
       if (err) {
         console.log('readObject', err);
         return;
       }
-      console.log(`key: ${key} value: ${data}`);
+      console.log("read :", key, data.toString());
     });
   });
 }
