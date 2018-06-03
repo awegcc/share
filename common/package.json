@@ -1,0 +1,41 @@
+{
+  "name": "myshare-fileserver-example",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "assert-types": "^0.2.1",
+    "async": "^2.6.1",
+    "basic-auth": "^2.0.0",
+    "du": "^0.1.0",
+    "encoding-down": "^5.0.3",
+    "errno": "^0.1.7",
+    "express": "^4.16.3",
+    "isemail": "^3.1.2",
+    "leveldown": "^4.0.1",
+    "levelup": "^3.0.1",
+    "lodash": "^4.17.10",
+    "lru-cache": "^4.1.3",
+    "merge": "^1.2.0",
+    "ntp": "0.0.5",
+    "request": "^2.87.0",
+    "rotating-file-stream": "^1.3.6",
+    "secp256k1": "^3.5.0",
+    "strip-json-comments": "^2.0.1",
+    "through": "^2.3.8"
+  },
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "mocha": "^5.2.0",
+    "nyc": "^12.0.1",
+    "proxyquire": "^2.0.1",
+    "rimraf": "^2.6.2",
+    "sinon": "^5.0.10"
+  }
+}
