@@ -11,7 +11,7 @@ qemu-system-arm -M virt  -kernel netboot/vmlinuz -initrd netboot/initrd.gz -hda 
 # Not working ( host bridge not forward guest packet)
 qemu-system-aarch64 -M virt -m 1024 -cpu cortex-a53 -kernel installer-linux -initrd installer-initrd.gz -hda disk01.img -nographic -no-reboot -netdev type=tap,id=tap0 -device virtio-net-device,netdev=tap0
 
-# works well
-qemu-system-aarch64 -M virt -m 1024 -cpu cortex-a53 -kernel installer-linux -initrd installer-initrd.gz -hda disk01.img -nographic -no-reboot -netdev user,id=user0 -device virtio-net-pci,netdev=user0
+# works well on Windows10,Debian9,
+qemu-system-aarch64 -M virt -m 1024 -cpu cortex-a53 -kernel installer-linux -initrd installer-initrd.gz -hda disk01.img -nographic -no-reboot -netdev user,id=user0 -device virtio-net-device,netdev=user0
 
 
