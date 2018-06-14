@@ -15,6 +15,5 @@ sed -i 's/myshare-base/..\/..\/base/' filestore/lib/file-store.js
 
 sed -i 's/myshare-base/..\/..\/base/' fileserver/lib/file-server.js
 
-
 pkg -t node8-linux-x64 fileserver/benchmark/fileserver-write-get.js
 
