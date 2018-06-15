@@ -1,6 +1,6 @@
 # TEST Markdown
 
-## Code
+## python Code
 
 ``` python
 def test():
@@ -9,6 +9,14 @@ def test():
 
 ```
 
-## End
+## js code
+``` javascript
+const fs = require('fs');
+let rs = fs.createReadStream('/file/to/path')
+rs.on('data', (chunk) => {
+   console.log('data: ', chunk.toString());
+});
+rs.end();
+```
 
 # MMMMM
