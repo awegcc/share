@@ -50,4 +50,5 @@ https://www.ubuntu.com/download/alternative-downloads
 
 # Shrink(reclaim) qcow2 disk
 https://www.jamescoyle.net/how-to/323-reclaim-disk-space-from-a-sparse-image-file-qcow2-vmdk
+
 https://blog.tinned-software.net/shrink-sparse-cqow2-disc-image/
