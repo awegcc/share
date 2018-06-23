@@ -48,3 +48,5 @@ qemu-system-aarch64 -M virt\
 # Install ARM Ubuntu 14.04
 https://www.ubuntu.com/download/alternative-downloads
 
+# Shrink(reclaim) qcow2 disk
+https://www.jamescoyle.net/how-to/323-reclaim-disk-space-from-a-sparse-image-file-qcow2-vmdk
