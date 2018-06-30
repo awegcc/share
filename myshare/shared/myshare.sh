@@ -11,12 +11,13 @@ function stop_services()
   # kill all related services
   #ps -elf | grep myshare-farmer | grep -v grep | cut -d " " -f 1 > $myshare_home/pidlist
   #ps -elf | grep myshare-s3 | grep -v grep | cut -d " " -f 1 >> $myshare_home/pidlist
-  ps -elf | grep myshare.mfs | grep -v grep | cut -d " " -f 1 >> $myshare_home/pidlist
-  ps -elf | grep mssync | grep -v grep | cut -d " " -f 1 >> $myshare_home/pidlist
+  #ps -elf | grep myshare.mfs | grep -v grep | cut -d " " -f 1 >> $myshare_home/pidlist
+  #ps -elf | grep mssync | grep -v grep | cut -d " " -f 1 >> $myshare_home/pidlist
+  ps -elf | grep myshare-miner | grep -v grep | cut -d " " -f 1 >> $myshare_home/pidlist
   
   for i in `cat $myshare_home/pidlist`
   do
-  kill $i
+    kill $i
   done
 }
 
