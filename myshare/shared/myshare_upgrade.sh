@@ -61,15 +61,35 @@ do
   if [ $onlineversion \> $localversion ]
   then
     pkg_name="myshare_${onlineversion}_${pkg_type}.qpkg"
-    echo "Begin download latest package: $pkg_name from $url" >> $LOG_FILE
-    # Download online package and MD5
+    pkg_cksum="myshare_${onlineversion}_${pkg_type}.qpkg.md5"
+
+    # Download online pkg checksum
+    echo "Begin download latest pkg md5: ${pkg_cksum} from $url" >> $LOG_FILE
+    if curl -s ${url}/${pkg_cksum} -o $myshare_home/upgrade/${pkg_cksum}
+    then
+      cksum_value=$(awk '{printf("%s",$1);exit}' $myshare_home/upgrade/${pkg_cksum})
+      echo "Downloaded file[$pkg_cksum] checksum[$cksum_value] from $url" >> $LOG_FILE
+    else
+      echo "Failed download file[$pkg_cksum] checksum from $url" >> $LOG_FILE
+      continue
+    fi
+
+    # Download online pkg
+    echo "Begin download latest pkg: $pkg_name from $url" >> $LOG_FILE
     if curl -s ${url}/${pkg_name} -o $myshare_home/upgrade/${pkg_name}
     then
-      echo "downloaded package: $pkg_name from $url" >> $LOG_FILE
+      echo "downloaded pkg: $pkg_name from $url" >> $LOG_FILE
+      pkg_md5=$(md5sum $myshare_home/upgrade/${pkg_name} | awk '{printf("%s",$1)}')
+      if [ "X$cksum_value" != "X$pkg_md5" ]
+      then
+        echo "pkg md5 $pkg_md5 mismatch" >> $LOG_FILE
+        continue
+      fi
       sh $myshare_home/upgrade/$pkg_name
-      echo "successfully installed new package: $pkg_name" >> $LOG_FILE
+      echo "successfully installed new pkg: $pkg_name" >> $LOG_FILE
+      break
     else
-      echo "failed download package: $pkg_name from $url, try another url" >> $LOG_FILE
+      echo "failed download pkg: $pkg_name from $url, try another url" >> $LOG_FILE
       continue
     fi
   else
