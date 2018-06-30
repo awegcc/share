@@ -1,7 +1,12 @@
 #/bin/sh
-# Fri Jun 29 17:03:54 DST 2018
+# myshare upgrade script
+# Fri Jun 29 17:03:54 CST 2018
 #
-server_url=http://192.168.0.8:3000
+server_list=(
+http://192.168.0.8:3000
+http://192.168.1.135:3000
+http://192.168.1.212:3000
+)
 
 myshare_home=$(getcfg myshare Install_Path -d "" -f /etc/config/qpkg.conf)
 myshare_data=$(getcfg myshare Data_Path -d "" -f /etc/config/qpkg.conf)
@@ -22,7 +27,7 @@ then
   exit 3
 else
   LOG_FILE=${myshare_data}/upgrade.log
-  echo "Local config is fine[`date`], continue check online version[$server_url]" >> $LOG_FILE
+  echo "[`date`] Local config is fine, continue check online version" >> $LOG_FILE
 fi
 
 if [ "X$arch_type" = "Xx86_64" ]
@@ -32,7 +37,7 @@ elif [ "X$arch_type" = "Xaarch64" ]
 then
   pkg_type="arm_64"
 else
-  echo "not support $arch_type" >> $LOG_FILE
+  echo "Not support $arch_type" >> $LOG_FILE
   exit 4
 fi
 echo "myshare local version[$localversion], local pkg type[$pkg_type]" >> $LOG_FILE
@@ -41,25 +46,34 @@ mkdir -p $myshare_home/upgrade
 rm -rf $myshare_home/upgrade/*
 
 
-# need to download online version number via wget, code is ToBeAdded
-if curl -s ${server_url}/version -o $myshare_home/upgrade/version
-then
-  onlineversion=$(cat $myshare_home/upgrade/version)
-  echo "Get online version: $onlineversion" >> $LOG_FILE
-else
-  echo "Get online error, exit" >> $LOG_FILE
-fi
-
-
-if [ $onlineversion \> $localversion ]
-then
-  pkg_name="myshare_${onlineversion}_${pkg_type}.qpkg"
-  echo "Begin download latest package: $pkg_name" >> $LOG_FILE
-  # need to download online upgrade package and MD5 number via wget, code is ToBeAdded
-  curl -s ${server_url}/$pkg_name -o $myshare_home/upgrade/$pkg_name
-  sh $myshare_home/upgrade/$pkg_name
-  echo "successfully installed new package: $pkg_name" >> $LOG_FILE
-else
-  echo "Local version[$localversion] is already the latest" >> $LOG_FILE
-fi
-
+# Download online version
+for url in ${server_list[@]}
+do
+  if curl -s ${url}/version -o $myshare_home/upgrade/version
+  then
+    onlineversion=$(cat $myshare_home/upgrade/version)
+    echo "Get online version[$onlineversion] from $url" >> $LOG_FILE
+  else
+    echo "Failed get online version from: $url" >> $LOG_FILE
+    continue
+  fi
+  
+  if [ $onlineversion \> $localversion ]
+  then
+    pkg_name="myshare_${onlineversion}_${pkg_type}.qpkg"
+    echo "Begin download latest package: $pkg_name from $url" >> $LOG_FILE
+    # Download online package and MD5
+    if curl -s ${url}/${pkg_name} -o $myshare_home/upgrade/${pkg_name}
+    then
+      echo "downloaded package: $pkg_name from $url" >> $LOG_FILE
+      sh $myshare_home/upgrade/$pkg_name
+      echo "successfully installed new package: $pkg_name" >> $LOG_FILE
+    else
+      echo "failed download package: $pkg_name from $url, try another url" >> $LOG_FILE
+      continue
+    fi
+  else
+    echo "Local version[$localversion] is already the latest" >> $LOG_FILE
+    break
+  fi
+done
