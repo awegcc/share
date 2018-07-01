@@ -109,8 +109,12 @@
 #PKG_MAIN_REMOVE="{
 #}"
 #
-#PKG_POST_REMOVE="{
-#}"
+PKG_POST_REMOVE="{
+  $CMD_ECHO "begin ${FUNCNAME[0]}"
+  $CMD_SED -i '/.*myshare_upgrade$/d' $SYS_CONFIG_DIR/crontab
+  /usr/bin/crontab $SYS_CONFIG_DIR/crontab
+  $CMD_ECHO "end   ${FUNCNAME[0]}"
+}"
 #
 ######################################################################
 # Define any package specific initialization that shall be performed
