@@ -110,10 +110,8 @@
 #}"
 #
 PKG_POST_REMOVE="{
-  $CMD_ECHO "begin ${FUNCNAME[0]}"
   $CMD_SED -i '/.*myshare_upgrade$/d' $SYS_CONFIG_DIR/crontab
   /usr/bin/crontab $SYS_CONFIG_DIR/crontab
-  $CMD_ECHO "end   ${FUNCNAME[0]}"
 }"
 #
 ######################################################################
@@ -137,18 +135,15 @@ PKG_POST_REMOVE="{
 MYSHARE_DATA_PATH=""
 
 pkg_pre_install(){
-  $CMD_ECHO "begin ${FUNCNAME[0]}"
-  $CMD_ECHO "end   ${FUNCNAME[0]}"
+  MYSHARE_DATA_PATH=$($CMD_GETCFG myshare Data_Path -d "" -f $SYS_QPKG_CONFIG_FILE)
+  $CMD_ECHO "Find myshare_data:   $MYSHARE_DATA_PATH"
 }
 #
 pkg_install(){
-  $CMD_ECHO "begin ${FUNCNAME[0]}"
-  $CMD_ECHO "end   ${FUNCNAME[0]}"
+  :
 }
 #
 pkg_post_install(){
-  $CMD_ECHO "begin ${FUNCNAME[0]}"
-  $CMD_ECHO "SYS_QPKG_BASE :   $SYS_QPKG_BASE"
   $CMD_ECHO "SYS_QPKG_DIR  :   $SYS_QPKG_DIR"
   if [ "X$MYSHARE_DATA_PATH" = "X" ]
   then
@@ -167,5 +162,4 @@ pkg_post_install(){
     $CMD_ECHO '4 4 * * * /usr/local/bin/myshare_upgrade' >> $SYS_CONFIG_DIR/crontab
   fi
   /usr/bin/crontab $SYS_CONFIG_DIR/crontab
-  $CMD_ECHO "end   ${FUNCNAME[0]}"
 }
