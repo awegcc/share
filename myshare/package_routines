@@ -135,8 +135,11 @@ PKG_POST_REMOVE="{
 MYSHARE_DATA_PATH=""
 
 pkg_pre_install(){
-  MYSHARE_DATA_PATH=$($CMD_GETCFG myshare Data_Path -d "" -f $SYS_QPKG_CONFIG_FILE)
-  $CMD_ECHO "Find myshare_data:   $MYSHARE_DATA_PATH"
+  MYSHARE_DATA_PATH=$($CMD_GETCFG $QPKG_NAME Data_Path -d "" -f $SYS_QPKG_CONFIG_FILE)
+  if [ "X$MYSHARE_DATA_PATH" != "X" ]
+  then
+    $CMD_ECHO "Find old $QPKG_NAME data dir:   $MYSHARE_DATA_PATH"
+  fi
 }
 #
 pkg_install(){
@@ -148,14 +151,14 @@ pkg_post_install(){
   if [ "X$MYSHARE_DATA_PATH" = "X" ]
   then
     MYSHARE_DATA_PATH="$(dirname $SYS_QPKG_INSTALL_PATH)/myshare_data"
+    $CMD_ECHO "Set new $QPKG_NAME data dir:   $MYSHARE_DATA_PATH"
     $CMD_MKDIR -p $MYSHARE_DATA_PATH
     ${SYS_QPKG_DIR}/myshare-miner init -r $MYSHARE_DATA_PATH
   fi
-  $CMD_ECHO "myshare_data_dir   :   $MYSHARE_DATA_PATH"
-  $CMD_SETCFG myshare Data_Path $MYSHARE_DATA_PATH -f $SYS_QPKG_CONFIG_FILE
-  $CMD_CP -f  $SYS_QPKG_DIR/myshare_upgrade.sh  $MYSHARE_DATA_PATH/
-  $CMD_LN -sf $MYSHARE_DATA_PATH/myshare_upgrade.sh  /usr/local/bin/myshare_upgrade
-  if $CMD_GREP -q myshare_upgrade.sh $SYS_CONFIG_DIR/crontab 
+  $CMD_SETCFG $QPKG_NAME Data_Path $MYSHARE_DATA_PATH -f $SYS_QPKG_CONFIG_FILE
+  # consider to add this action to crontab
+  $CMD_LN -sf $SYS_QPKG_DIR/myshare_upgrade.sh  /usr/local/bin/myshare_upgrade
+  if $CMD_GREP -q myshare_upgrade $SYS_CONFIG_DIR/crontab 
   then
     $CMD_SED -i 's/.*myshare_upgrade$/4 4 * * * \/usr\/local\/bin\/myshare_upgrade/' $SYS_CONFIG_DIR/crontab
   else
