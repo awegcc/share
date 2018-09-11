@@ -1,0 +1,7 @@
+FROM nginx
+
+COPY ./conf/nginx.conf /etc/nginx/
+
+EXPOSE  8888
+
+CMD ["nginx"]
