@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = requier('path');
 const Cache = require('streaming-cache');
+// cache-manager-fs
 
 const CACHE_SIZE = 64
 const CACHE_MAX_AGE = 4 * 24 * 3600
