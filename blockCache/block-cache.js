@@ -1,12 +1,13 @@
 const fs = require('fs');
 const path = requier('path');
-const Cache = require('streaming-cache');
+const mCache = require('streaming-cache');
+const fCache = require('lru-files');
 // cache-manager-fs
 
 const CACHE_SIZE = 64
 const CACHE_MAX_AGE = 4 * 24 * 3600
 const CACHE_DIR = "/tmp/"
-const CACHE_THRESHOLD = 64 * 1024
+const MCACHE_THRESHOLD = 64 * 1024
 
 class BlockCache {
     constructor(opts = {}) {
@@ -18,7 +19,14 @@ class BlockCache {
             max: CACHE_SIZE,
             maxAge: CACHE_MAX_AGE
         };
-        this.mcache = new Cache(cache_options);
+        this.mcache = new mCache(cache_options);
+        this.fcache = new fCache({
+            files: 256,
+            size: '2 GB',
+            age: '1 Day',
+            check: '1 Hour',
+            persist: '1 Hour'
+        })
     }
 
     exists(key) {
@@ -26,17 +34,21 @@ class BlockCache {
     }
 
     delete(key) {
-        try {
-            fs.unlinkSync(path.join(this.dir, key));
-        } catch (err) {
-
+        if (this.mcache.exists(key)) {
+            this.mchche.del(key);
+        } else {
+            try {
+                fs.unlinkSync(path.join(this.dir, key));
+            } catch (err) {
+                //
+            }
         }
     }
 
     blockInfo(key) {
         let stat = null;
         try {
-            stat = fs.statSync(path.json(this.dir, key))
+            stat = fs.statSync(path.json(this.dir, key));
         } catch (err) {
             stat = null;
         }
@@ -45,12 +57,13 @@ class BlockCache {
 
     createReadStream(key) {
         let rs = null;
-        rs = this.cache.get(key)
-        if (!rs) {
+        if (this.mcache.exists(key)) {
+            rs = this.cache.get(key);
+        } else {
             try {
-                rs = fs.createReadStream(path.json(this.dir, key))
+                rs = fs.createReadStream(path.json(this.dir, key));
             } catch (err) {
-                rs = null
+                rs = null;
             }
         }
         return rs;
@@ -60,13 +73,13 @@ class BlockCache {
         let ws = null;
         if (size) {
             if (!this.exists(key)) {
-                if (size < CACHE_THRESHOLD) {
-                    ws = this.mcache.set(key)
+                if (size < MCACHE_THRESHOLD) {
+                    ws = this.mcache.set(key);
                 } else {
                     try {
-                        ws = fs.createWriteStream(path.json(this.dir, key))
+                        ws = fs.createWriteStream(path.json(this.dir, key));
                     } catch (err) {
-                        ws = null
+                        ws = null;
                     }
                 }
             }
